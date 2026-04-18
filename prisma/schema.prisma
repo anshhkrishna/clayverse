@@ -1,0 +1,205 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Auth ──────────────────────────────────────────────────────────────────────
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ─── User ──────────────────────────────────────────────────────────────────────
+
+model User {
+  id             String    @id @default(cuid())
+  name           String?
+  username       String?   @unique
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  bio            String?
+  specialty      String[]
+  location       String?
+  websiteUrl     String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  accounts       Account[]
+  sessions       Session[]
+  projects       Project[]
+  glazeRecipes   GlazeRecipe[]
+  likes          Like[]
+  following      Follow[]  @relation("Following")
+  followers      Follow[]  @relation("Followers")
+  classesOwned   ClassSession[] @relation("Educator")
+  classesJoined  ClassSession[] @relation("Students")
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+  follower    User     @relation("Following", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("Followers", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+}
+
+// ─── Project ───────────────────────────────────────────────────────────────────
+
+model Project {
+  id              String    @id @default(cuid())
+  name            String
+  description     String?
+  mode            String    @default("wheel")
+  status          String    @default("draft")
+  clayBodyId      String?
+  glazeRecipeIds  String[]
+  tags            String[]
+  isPublic        Boolean   @default(false)
+  thumbnailUrl    String?
+  authorId        String
+  remixedFromId   String?
+  sceneData       String?   @db.Text
+  simulationData  String?   @db.Text
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  author          User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  remixedFrom     Project?  @relation("Remixes", fields: [remixedFromId], references: [id])
+  remixes         Project[] @relation("Remixes")
+  versions        ProjectVersion[]
+  post            CommunityPost?
+  likes           Like[]
+}
+
+model ProjectVersion {
+  id            String   @id @default(cuid())
+  projectId     String
+  versionNumber Int
+  label         String?
+  sceneData     String   @db.Text
+  createdAt     DateTime @default(now())
+
+  project       Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, versionNumber])
+}
+
+// ─── Materials ─────────────────────────────────────────────────────────────────
+
+model GlazeRecipe {
+  id                    String   @id @default(cuid())
+  name                  String
+  colorHex              String
+  surface               String
+  effects               String[]
+  specificGravity       Float    @default(1.4)
+  coneMin               Int
+  coneMax               Int
+  compatibleAtmospheres String[]
+  ingredients           Json
+  notes                 String?
+  isPublic              Boolean  @default(true)
+  authorId              String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  author                User?    @relation(fields: [authorId], references: [id])
+}
+
+// ─── Community ─────────────────────────────────────────────────────────────────
+
+model CommunityPost {
+  id           String   @id @default(cuid())
+  projectId    String   @unique
+  title        String
+  description  String?
+  thumbnailUrl String?
+  tags         String[]
+  views        Int      @default(0)
+  license      String   @default("cc_by")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  likes        Like[]
+}
+
+model Like {
+  id        String   @id @default(cuid())
+  userId    String
+  projectId String?
+  postId    String?
+  createdAt DateTime @default(now())
+
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  project   Project?      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  post      CommunityPost? @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, projectId])
+  @@unique([userId, postId])
+}
+
+// ─── Education ─────────────────────────────────────────────────────────────────
+
+model ClassSession {
+  id               String       @id @default(cuid())
+  title            String
+  educatorId       String
+  sharedProjectIds String[]
+  startDate        DateTime
+  endDate          DateTime?
+  createdAt        DateTime     @default(now())
+
+  educator         User         @relation("Educator", fields: [educatorId], references: [id])
+  students         User[]       @relation("Students")
+  assignments      Assignment[]
+}
+
+model Assignment {
+  id                 String       @id @default(cuid())
+  classSessionId     String
+  title              String
+  description        String?
+  dueDate            DateTime
+  submittedProjectIds String[]
+  createdAt          DateTime     @default(now())
+
+  classSession       ClassSession @relation(fields: [classSessionId], references: [id], onDelete: Cascade)
+}

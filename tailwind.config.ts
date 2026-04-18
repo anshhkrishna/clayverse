@@ -1,0 +1,126 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  darkMode: "class",
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        clay: {
+          50: "#fdf8f4",
+          100: "#f7ede2",
+          200: "#edd9c3",
+          300: "#dfbf9b",
+          400: "#cf9d6e",
+          500: "#c0824a",
+          600: "#a8683b",
+          700: "#8a5130",
+          800: "#6e4028",
+          900: "#593424",
+          950: "#2f1a11",
+        },
+        earth: {
+          50: "#f6f4f0",
+          100: "#e8e3d9",
+          200: "#d3c9b6",
+          300: "#b9a98e",
+          400: "#9e8a6c",
+          500: "#87735a",
+          600: "#705e4a",
+          700: "#5c4c3c",
+          800: "#4c3e32",
+          900: "#40342b",
+          950: "#221b16",
+        },
+        kiln: {
+          50: "#fff8ed",
+          100: "#ffefd3",
+          200: "#ffdba6",
+          300: "#ffc06d",
+          400: "#ff9b33",
+          500: "#ff7d0a",
+          600: "#f06200",
+          700: "#c74a02",
+          800: "#9e3a0a",
+          900: "#7f320c",
+          950: "#451604",
+        },
+        sage: {
+          50: "#f4f7f2",
+          100: "#e4ecdf",
+          200: "#c9d9c1",
+          300: "#a3bf97",
+          400: "#7aa06b",
+          500: "#5c8350",
+          600: "#476840",
+          700: "#3a5334",
+          800: "#30432c",
+          900: "#293826",
+          950: "#131e12",
+        },
+        ash: {
+          50: "#f5f5f4",
+          100: "#e7e5e4",
+          200: "#d0ccc9",
+          300: "#b0aba7",
+          400: "#8c8480",
+          500: "#716a65",
+          600: "#5e5752",
+          700: "#4f4843",
+          800: "#433e3b",
+          900: "#3a3532",
+          950: "#1e1b19",
+        },
+      },
+      fontFamily: {
+        sans: ["Inter Variable", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Fraunces", "Georgia", "serif"],
+      },
+      borderRadius: {
+        DEFAULT: "0.5rem",
+        sm: "0.25rem",
+        md: "0.75rem",
+        lg: "1rem",
+        xl: "1.5rem",
+        "2xl": "2rem",
+      },
+      boxShadow: {
+        clay: "0 2px 8px 0 rgba(48, 26, 17, 0.12), 0 1px 2px 0 rgba(48, 26, 17, 0.08)",
+        "clay-md": "0 4px 16px 0 rgba(48, 26, 17, 0.14), 0 2px 4px 0 rgba(48, 26, 17, 0.08)",
+        "clay-lg": "0 8px 32px 0 rgba(48, 26, 17, 0.18), 0 4px 8px 0 rgba(48, 26, 17, 0.1)",
+      },
+      animation: {
+        breathe: "breathe 3s ease-in-out infinite",
+        "spin-slow": "spin 3s linear infinite",
+        "fade-in": "fadeIn 0.3s ease-out",
+        "slide-up": "slideUp 0.3s ease-out",
+        "slide-in-right": "slideInRight 0.3s ease-out",
+      },
+      keyframes: {
+        breathe: {
+          "0%, 100%": { transform: "scale(1)" },
+          "50%": { transform: "scale(1.03)" },
+        },
+        fadeIn: {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        slideUp: {
+          from: { transform: "translateY(8px)", opacity: "0" },
+          to: { transform: "translateY(0)", opacity: "1" },
+        },
+        slideInRight: {
+          from: { transform: "translateX(8px)", opacity: "0" },
+          to: { transform: "translateX(0)", opacity: "1" },
+        },
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;
