@@ -28,10 +28,14 @@ and a community remix feed with credit tracking.
 
 ```bash
 npm install
+npx prisma generate    # required before build or typecheck, no database needed
 # set DATABASE_URL and ANTHROPIC_API_KEY in .env.local
 npx prisma migrate dev
 npm run dev
 ```
+
+`npm run build` needs `prisma generate` to have run first, otherwise typecheck fails on
+the `PrismaClient` import. it does not need a live database.
 
 ## notes
 
